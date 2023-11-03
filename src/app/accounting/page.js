@@ -1,15 +1,31 @@
 "use client"
-
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { Form } from './components/Form'
 import { List } from './components/List'
 import styles from './page.module.css';
 import Link from 'next/link'
 import classNames from 'classnames'
+import { useRouter } from 'next/navigation';
+import { useAuthContext } from '@/context/AuthContext';
+import getData from '@/firebase/firestore/getData';
+
 
 export default function Accounting(){
-
     const [data, setData] = useState([])
+    const { user } = useAuthContext()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (user == null) router.push("/")
+    }, [user])
+    useEffect(()=>{
+        getData(`userdata/${user.uid}/data`).then((docs) => {
+            console.log(docs);
+            setData(docs);
+        });
+    },[])
+    
+
     function getTotal(){
         let total = 0;
         for (let i = 0; i < data.length; i++){
@@ -23,7 +39,7 @@ export default function Accounting(){
         return total;
     }
     let total = getTotal();
-    //console.log(data)
+
     return(
         <div className={styles.main}>
             <Form addData={setData}/>

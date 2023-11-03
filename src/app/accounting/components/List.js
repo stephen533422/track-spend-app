@@ -1,11 +1,16 @@
 import styles from '../page.module.css';
 import classNames from 'classnames'
+import dropData from '@/firebase/firestore/dropData';
+import { useAuthContext } from '@/context/AuthContext';
 
 export function List({ listData, deleteData}){
+    const { user } = useAuthContext()
+
     function deleteItem(id){
         deleteData(function(prev){
             return prev.filter(item => item.id !== id)
         })
+        dropData(`userdata/${user.uid}/data`, id)
     }
 
     return(

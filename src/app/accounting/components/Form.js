@@ -3,8 +3,12 @@ import { useState } from 'react'
 import { v4 } from "uuid";
 import styles from '../page.module.css';
 import classNames from 'classnames'
+import storeData from '@/firebase/firestore/storeData';
+import { useAuthContext } from '@/context/AuthContext';
 
 export function Form({ addData }){
+    const { user } = useAuthContext()
+
     const select = ["收入", "支出"]
     const [type, setType] = useState(select[0])
     function typeChange(e){
@@ -19,11 +23,12 @@ export function Form({ addData }){
         setNote(e.target.value)
     }
 
-    function saveData(){
+    async function saveData(){
+        const id=v4();
         addData(function(prev){
             return [
                 {
-                    id: v4(),
+                    id: id,
                     type,
                     money,
                     note,
@@ -31,6 +36,7 @@ export function Form({ addData }){
                 ...prev
             ]
         })
+        storeData(`userdata/${user.uid}/data`, id, { type, money, note});
     }
     //console.log(type, money, note)
     return (

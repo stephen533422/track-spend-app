@@ -11,18 +11,26 @@ import getData from '@/firebase/firestore/getData';
 
 
 export default function Accounting(){
-    const [data, setData] = useState([])
-    const { user } = useAuthContext()
-    const router = useRouter()
+    const [data, setData] = useState([]);
+    const { user } = useAuthContext();
+    const router = useRouter();
 
     useEffect(() => {
-        if (user == null) router.push("/")
+        if (user == null) {
+            router.push("/");
+        }
     }, [user])
+
     useEffect(()=>{
-        getData(`userdata/${user.uid}/data`).then((docs) => {
-            console.log(docs);
-            setData(docs);
-        });
+        if (user == null) {
+            router.push("/");
+        }
+        else {
+            getData(`userdata/${user.uid}/data`).then((docs) => {
+                console.log(docs);
+                setData(docs);
+            });
+        }
     },[])
     
 
